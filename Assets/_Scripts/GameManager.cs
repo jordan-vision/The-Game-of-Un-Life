@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public static BoundingBox GridBoundingBox;
+
+    public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase;
+    public Cells Cells;
 
     void Start()
     {

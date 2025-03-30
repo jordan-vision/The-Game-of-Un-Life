@@ -17,4 +17,6 @@ public class BoundingBox
     }
 
     public bool Contains(int x, int y) => x >= minX && x <= maxX && y >= minY && y <= maxY;
+
+    public bool IsOnTheLeftSide(int x, int y) => Contains(x, y) && x <= minX + (maxX - minX) / 2;
 }

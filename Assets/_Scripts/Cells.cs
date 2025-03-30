@@ -8,9 +8,11 @@ public class Cells : MonoBehaviour
     float timer;
     Tilemap tilemap;
     int generation = 0;
+    bool running = false;
 
     [SerializeField] float timeBetweenGenerations;
-    [SerializeField] TileBase enemyTileBase;
+
+    public Tilemap Tilemap => tilemap;
 
     private void Start()
     {
@@ -18,8 +20,18 @@ public class Cells : MonoBehaviour
         timer = timeBetweenGenerations;
     }
 
+    public void StartRunning()
+    {
+        running = true;
+    }
+
     private void Update()
     {
+        if (!running)
+        {
+            return;
+        }
+
         timer -= Time.deltaTime;
 
         if (timer <= 0)
@@ -31,29 +43,49 @@ public class Cells : MonoBehaviour
 
     private void Generate()
     {
+        generation++;
         var toKill = new List<(int, int)> { };
         var newEnemies = new List<(int, int)> { };
+        var moveBullet = new List<(int, int)> { };
 
         for (var x = GameManager.GridBoundingBox.MinX; x <= GameManager.GridBoundingBox.MaxX; x++)
         {
             for (var y = GameManager.GridBoundingBox.MinY; y <= GameManager.GridBoundingBox.MaxY; y++)
             {
                 var liveNeighbors = CountLiveNeighbors(x, y);
+                var tileBase = tilemap.GetTile(new(x, y));
 
-                // Live cell
-                if (tilemap.GetTile(new(x, y)) == enemyTileBase)
+                // Enemy cell
+                if (tileBase == GameManager.Instance.EnemyTileBase)
                 {
                     if (liveNeighbors < 2 || liveNeighbors > 3)
                     {
                         toKill.Add((x, y));
                     } 
                 }
-                // Dead cell
+
                 else
                 {
                     if (liveNeighbors == 3)
                     {
                         newEnemies.Add((x, y));
+                    }
+                }
+
+                if (tileBase == GameManager.Instance.GunnerTileBase)
+                {
+                    if (generation % 4 == 0) 
+                    {
+                        moveBullet.Add((x + 1, y));
+                    }
+                }
+
+                if (tileBase == GameManager.Instance.BulletTileBase)
+                {
+                    toKill.Add((x, y));
+                    if (GameManager.GridBoundingBox.Contains(x + 1, y))
+                    {
+                        moveBullet.Add((x + 1, y));
                     }
                 }
             }
@@ -66,7 +98,12 @@ public class Cells : MonoBehaviour
 
         foreach (var (x, y) in newEnemies)
         {
-            tilemap.SetTile(new(x, y), enemyTileBase);
+            tilemap.SetTile(new(x, y), GameManager.Instance.EnemyTileBase);
+        }
+
+        foreach (var (x, y) in moveBullet)
+        {
+            tilemap.SetTile(new(x, y), GameManager.Instance.BulletTileBase);
         }
     }
 
