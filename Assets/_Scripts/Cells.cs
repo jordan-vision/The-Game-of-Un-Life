@@ -1,13 +1,13 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Enemies : MonoBehaviour
+public class Cells : MonoBehaviour
 {
     float timer;
     Tilemap tilemap;
+    int generation = 0;
 
     [SerializeField] float timeBetweenGenerations;
     [SerializeField] TileBase enemyTileBase;
@@ -32,7 +32,7 @@ public class Enemies : MonoBehaviour
     private void Generate()
     {
         var toKill = new List<(int, int)> { };
-        var toBirth = new List<(int, int)> { };
+        var newEnemies = new List<(int, int)> { };
 
         for (var x = GameManager.GridBoundingBox.MinX; x <= GameManager.GridBoundingBox.MaxX; x++)
         {
@@ -41,7 +41,7 @@ public class Enemies : MonoBehaviour
                 var liveNeighbors = CountLiveNeighbors(x, y);
 
                 // Live cell
-                if (tilemap.GetTile(new(x, y)) != null)
+                if (tilemap.GetTile(new(x, y)) == enemyTileBase)
                 {
                     if (liveNeighbors < 2 || liveNeighbors > 3)
                     {
@@ -53,7 +53,7 @@ public class Enemies : MonoBehaviour
                 {
                     if (liveNeighbors == 3)
                     {
-                        toBirth.Add((x, y));
+                        newEnemies.Add((x, y));
                     }
                 }
             }
@@ -64,7 +64,7 @@ public class Enemies : MonoBehaviour
             tilemap.SetTile(new(x, y), null);
         }
 
-        foreach (var (x, y) in toBirth)
+        foreach (var (x, y) in newEnemies)
         {
             tilemap.SetTile(new(x, y), enemyTileBase);
         }
@@ -75,7 +75,7 @@ public class Enemies : MonoBehaviour
         var neighbors = new List<(int, int)> { (x+1, y), (x-1, y), (x, y+1), (x, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1) }
             .Where(xy => GameManager.GridBoundingBox.Contains(xy.Item1, xy.Item2));
 
-        var liveNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == enemyTileBase);
+        var liveNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) != null);
 
         return liveNeighbors.Count();
     }
