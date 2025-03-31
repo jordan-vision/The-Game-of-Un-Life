@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
@@ -9,7 +10,7 @@ public class GameManager : MonoBehaviour
     public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase;
     public Cells Cells;
 
-    void Start()
+    private void Start()
     {
         if (Instance == null)
         {
@@ -19,8 +20,16 @@ public class GameManager : MonoBehaviour
         GridBoundingBox = new(-7, 6, -1, 3);
     }
 
-    void Update()
+    private void Update()
     {
-        
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+
+    public void Reload()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

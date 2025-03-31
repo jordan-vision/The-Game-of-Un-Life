@@ -14,10 +14,12 @@ public class Cells : MonoBehaviour
 
     public Tilemap Tilemap => tilemap;
 
+    public bool Running => running;
+
     private void Start()
     {
         tilemap = GetComponent<Tilemap>();
-        timer = timeBetweenGenerations;
+        timer = 0;
     }
 
     public void StartRunning()
@@ -52,7 +54,7 @@ public class Cells : MonoBehaviour
         {
             for (var y = GameManager.GridBoundingBox.MinY; y <= GameManager.GridBoundingBox.MaxY; y++)
             {
-                var liveNeighbors = CountLiveNeighbors(x, y);
+                var liveNeighbors = CountEnemyNeighbors(x, y);
                 var tileBase = tilemap.GetTile(new(x, y));
 
                 // Enemy cell
@@ -107,13 +109,48 @@ public class Cells : MonoBehaviour
         }
     }
 
-    private int CountLiveNeighbors(int x, int y)
+    private int CountEnemyNeighbors(int x, int y)
     {
         var neighbors = new List<(int, int)> { (x+1, y), (x-1, y), (x, y+1), (x, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1) }
             .Where(xy => GameManager.GridBoundingBox.Contains(xy.Item1, xy.Item2));
 
-        var liveNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) != null);
+        var liveNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
 
         return liveNeighbors.Count();
+    }
+
+    public bool TryAddCell(Vector3Int position, int cellType)
+    {
+        if (tilemap.GetTile(position) != null)
+        {
+            return false;
+        }
+
+        switch (cellType)
+        {
+            case 1:
+                tilemap.SetTile(position, GameManager.Instance.GunnerTileBase);
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
+    }
+
+    public int TryRemovecell(Vector3Int position)
+    {
+        var tileBase = tilemap.GetTile(position);
+        var returnValue = 0;
+
+        if (tileBase == GameManager.Instance.GunnerTileBase)
+        {
+            returnValue = 1;
+        }
+
+        tilemap.SetTile(position, null);
+
+        return returnValue;
     }
 }
