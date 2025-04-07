@@ -9,28 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Gunner
+  m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
+  m_Name: gunner
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: ab332b3fab03cfe47af271444fe668ed, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Transform:
-    e00: 1
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 1
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 1
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 1
-  m_InstancedGameObject: {fileID: 0}
-  m_Flags: 1
-  m_ColliderType: 1
+  m_AnimatedSprites:
+  - {fileID: 1926644505926837528, guid: b4b06e88bdcc3d34b909225720e7bb2f, type: 3}
+  - {fileID: 6509148619638406595, guid: b4b06e88bdcc3d34b909225720e7bb2f, type: 3}
+  - {fileID: 4636909154978059562, guid: b4b06e88bdcc3d34b909225720e7bb2f, type: 3}
+  - {fileID: 4830122435232756829, guid: b4b06e88bdcc3d34b909225720e7bb2f, type: 3}
+  m_MinSpeed: 8
+  m_MaxSpeed: 10
+  m_AnimationStartTime: 0
+  m_AnimationStartFrame: 0
+  m_TileColliderType: 0
+  m_TileAnimationFlags: 0
