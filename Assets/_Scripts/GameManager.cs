@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public static BoundingBox GridBoundingBox;
 
-    public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase;
+    public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase, WallTileBase;
     public Cells Cells;
 
     private void Start()

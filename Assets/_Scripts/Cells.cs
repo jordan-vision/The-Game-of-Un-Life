@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -49,12 +50,13 @@ public class Cells : MonoBehaviour
         var toKill = new List<(int, int)> { };
         var newEnemies = new List<(int, int)> { };
         var moveBullet = new List<(int, int)> { };
+        var spreadWall = new List<(int, int)> { };
 
         for (var x = GameManager.GridBoundingBox.MinX; x <= GameManager.GridBoundingBox.MaxX; x++)
         {
             for (var y = GameManager.GridBoundingBox.MinY; y <= GameManager.GridBoundingBox.MaxY; y++)
             {
-                var liveNeighbors = CountEnemyNeighbors(x, y);
+                var liveNeighbors = EnemyNeighbors(x, y).Count;
                 var tileBase = tilemap.GetTile(new(x, y));
 
                 // Enemy cell
@@ -100,6 +102,18 @@ public class Cells : MonoBehaviour
 
         foreach (var (x, y) in newEnemies)
         {
+            if (tilemap.GetTile(new(x, y)) == GameManager.Instance.WallTileBase)
+            {
+                var liveNeighbors = EnemyNeighbors(x, y);
+                foreach (var neighbor in liveNeighbors)
+                {
+                    if (!spreadWall.Contains(neighbor))
+                    {
+                        spreadWall.Add(neighbor);
+                    }
+                }
+            }
+
             tilemap.SetTile(new(x, y), GameManager.Instance.EnemyTileBase);
         }
 
@@ -107,16 +121,21 @@ public class Cells : MonoBehaviour
         {
             tilemap.SetTile(new(x, y), GameManager.Instance.BulletTileBase);
         }
+        
+        foreach (var (x, y) in spreadWall)
+        {
+            tilemap.SetTile(new(x, y), GameManager.Instance.WallTileBase);
+        }
     }
 
-    private int CountEnemyNeighbors(int x, int y)
+    private List<(int, int)> EnemyNeighbors(int x, int y)
     {
         var neighbors = new List<(int, int)> { (x+1, y), (x-1, y), (x, y+1), (x, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1) }
             .Where(xy => GameManager.GridBoundingBox.Contains(xy.Item1, xy.Item2));
 
-        var liveNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
+        var enemyNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
 
-        return liveNeighbors.Count();
+        return enemyNeighbors.ToList();
     }
 
     public bool TryAddCell(Vector3Int position, int cellType)
@@ -130,6 +149,10 @@ public class Cells : MonoBehaviour
         {
             case 1:
                 tilemap.SetTile(position, GameManager.Instance.GunnerTileBase);
+                break;
+
+            case 2:
+                tilemap.SetTile(position, GameManager.Instance.WallTileBase);
                 break;
 
             default:
@@ -147,6 +170,10 @@ public class Cells : MonoBehaviour
         if (tileBase == GameManager.Instance.GunnerTileBase)
         {
             returnValue = 1;
+        }
+        else if (tileBase == GameManager.Instance.WallTileBase)
+        {
+            returnValue = 2;
         }
 
         tilemap.SetTile(position, null);
