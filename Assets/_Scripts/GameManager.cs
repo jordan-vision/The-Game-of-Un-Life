@@ -4,32 +4,41 @@ using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
+    private Cells cells;
+
     public static GameManager Instance;
-    public static BoundingBox GridBoundingBox;
-
     public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase, WallTileBase;
-    public Cells Cells;
+    public UI UI;
 
-    private void Start()
+    public Cells Cells => cells;
+
+    private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
         }
 
-        GridBoundingBox = new(-7, 6, -1, 3);
+        cells = FindFirstObjectByType<Cells>();
     }
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+        ExitGame();
     }
 
     public void Reload()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void LoadScene(int index)
+    {
+        SceneManager.LoadScene(index);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

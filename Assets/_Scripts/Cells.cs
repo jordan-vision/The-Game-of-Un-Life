@@ -1,31 +1,48 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class Cells : MonoBehaviour
 {
-    float timer;
-    Tilemap tilemap;
+    float timer, currentStepTime;
     int generation = 0;
     bool running = false;
+    bool started = false;
 
-    [SerializeField] float timeBetweenGenerations;
+    Tilemap tilemap;
+    RandomElementsGenerator randomElementsGenerator;
+
+    [SerializeField] float baseStepTime;
+    [SerializeField] LevelData levelData;
 
     public Tilemap Tilemap => tilemap;
 
-    public bool Running => running;
+    public bool Started => started;
 
     private void Start()
     {
+        currentStepTime = baseStepTime;
+        timer = currentStepTime;
+
         tilemap = GetComponent<Tilemap>();
-        timer = 0;
+        randomElementsGenerator = GetComponent<RandomElementsGenerator>();
+
+        if (randomElementsGenerator != null)
+        {
+            randomElementsGenerator.AddWall();
+            randomElementsGenerator.AddGunner();
+            randomElementsGenerator.AddGunner();
+        }
+
+        running = levelData.Autoplay;
+        started = running;
     }
 
     public void StartRunning()
     {
         running = true;
+        started = true;
     }
 
     private void Update()
@@ -35,12 +52,19 @@ public class Cells : MonoBehaviour
             return;
         }
 
-        timer -= Time.deltaTime;
+        if (Input.GetKey(KeyCode.M))
+        {
+            GameManager.Instance.LoadScene(0);
+        }
 
-        if (timer <= 0)
+        currentStepTime = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) ? baseStepTime / 4 : baseStepTime;
+
+        timer += Time.deltaTime;
+
+        if (timer >= currentStepTime)
         {
             Generate();
-            timer = timeBetweenGenerations;
+            timer = 0;
         }
     }
 
@@ -52,9 +76,9 @@ public class Cells : MonoBehaviour
         var moveBullet = new List<(int, int)> { };
         var spreadWall = new List<(int, int)> { };
 
-        for (var x = GameManager.GridBoundingBox.MinX; x <= GameManager.GridBoundingBox.MaxX; x++)
+        for (var x = levelData.GridBoundingBox.MinX; x <= levelData.GridBoundingBox.MaxX; x++)
         {
-            for (var y = GameManager.GridBoundingBox.MinY; y <= GameManager.GridBoundingBox.MaxY; y++)
+            for (var y = levelData.GridBoundingBox.MinY; y <= levelData.GridBoundingBox.MaxY; y++)
             {
                 var liveNeighbors = EnemyNeighbors(x, y).Count;
                 var tileBase = tilemap.GetTile(new(x, y));
@@ -78,18 +102,29 @@ public class Cells : MonoBehaviour
 
                 if (tileBase == GameManager.Instance.GunnerTileBase)
                 {
-                    if (generation % 4 == 0) 
+                    if ((generation - 1) % 8 == 0) 
                     {
-                        moveBullet.Add((x + 1, y));
+                        if (levelData.Wraparound)
+                        {
+                            moveBullet.Add(levelData.GridBoundingBox.Wraparound(x + 1, y));
+                        }
+                        else
+                        {
+                            moveBullet.Add((x + 1, y));
+                        }
                     }
                 }
 
                 if (tileBase == GameManager.Instance.BulletTileBase)
                 {
                     toKill.Add((x, y));
-                    if (GameManager.GridBoundingBox.Contains(x + 1, y))
+                    if (levelData.GridBoundingBox.Contains(x + 1, y))
                     {
                         moveBullet.Add((x + 1, y));
+                    } 
+                    else if (levelData.Wraparound)
+                    {
+                        moveBullet.Add(levelData.GridBoundingBox.Wraparound(x + 1, y));
                     }
                 }
             }
@@ -130,19 +165,29 @@ public class Cells : MonoBehaviour
 
     private List<(int, int)> EnemyNeighbors(int x, int y)
     {
-        var neighbors = new List<(int, int)> { (x+1, y), (x-1, y), (x, y+1), (x, y-1), (x+1, y+1), (x-1, y+1), (x+1, y-1), (x-1, y-1) }
-            .Where(xy => GameManager.GridBoundingBox.Contains(xy.Item1, xy.Item2));
+        var allPotentialNeighbors = new List<(int, int)> { (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1), (x + 1, y + 1), (x - 1, y + 1), (x + 1, y - 1), (x - 1, y - 1) };
+        
+        List<(int, int)> actualNeighbors = new();
 
-        var enemyNeighbors = neighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
+        if (levelData.Wraparound)
+        {
+            actualNeighbors = allPotentialNeighbors.Select(xy => levelData.GridBoundingBox.Wraparound(xy.Item1, xy.Item2)).ToList();
+        }
+        else
+        {
+            actualNeighbors = allPotentialNeighbors.Where(xy => levelData.GridBoundingBox.Contains(xy.Item1, xy.Item2)).ToList();
+        }
+
+        var enemyNeighbors = actualNeighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
 
         return enemyNeighbors.ToList();
     }
 
     public bool TryAddCell(Vector3Int position, int cellType)
     {
-        if (tilemap.GetTile(position) != null)
+        if (tilemap.GetTile(position) != null && GameManager.Instance.UI != null)
         {
-            return false;
+            GameManager.Instance.UI.TryRemoveCell(position);
         }
 
         switch (cellType)
@@ -179,5 +224,10 @@ public class Cells : MonoBehaviour
         tilemap.SetTile(position, null);
 
         return returnValue;
+    }
+
+    public void Pause()
+    {
+        running = false;
     }
 }

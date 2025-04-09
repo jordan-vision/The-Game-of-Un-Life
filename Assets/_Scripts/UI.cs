@@ -13,11 +13,12 @@ public class UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] text;
 
     [SerializeField] private GameObject ghost;
-    [SerializeField] private GameObject stopButton;
+    [SerializeField] private GameObject playButton, stopButton, pauseButton, selector, instructions;
+    [SerializeField] private LevelData levelData;
 
     public void Select(int id)
     {
-        if (GameManager.Instance.Cells.Running)
+        if (GameManager.Instance.Cells.Started)
         {
             return;
         }
@@ -34,7 +35,7 @@ public class UI : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.Cells.Running)
+        if (GameManager.Instance.Cells.Started)
         {
             return;
         }
@@ -44,7 +45,7 @@ public class UI : MonoBehaviour
         var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var tilemapPosition = tilemap.WorldToCell(worldPosition);
 
-        var lockedIn = (GameManager.GridBoundingBox.IsOnTheLeftSide(tilemapPosition.x, tilemapPosition.y));
+        var lockedIn = (levelData.GridBoundingBox.IsOnTheLeftSide(tilemapPosition.x, tilemapPosition.y));
 
         ghost.transform.position = lockedIn ?
                 tilemap.GetCellCenterWorld(tilemapPosition) :
@@ -58,18 +59,7 @@ public class UI : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            var removed = GameManager.Instance.Cells.TryRemovecell(tilemapPosition);
-
-            if (removed != 0)
-            {
-                cellsLeft[removed - 1]++;
-                text[removed - 1].text = cellsLeft[removed - 1].ToString();
-
-                if (selected != 0 && cellsLeft[selected - 1] != 0)
-                {
-                    ghost.GetComponent<SpriteRenderer>().color = white;
-                }
-            }
+            TryRemoveCell(tilemapPosition);
         }
 
         else if (Input.GetKeyDown(KeyCode.Mouse0) && selected != 0 && cellsLeft[selected - 1] > 0)
@@ -93,8 +83,38 @@ public class UI : MonoBehaviour
         ghost.SetActive(false);
     }
 
-    public void ShowStopButton()
+    public void ShowStopAndPauseButtons()
     {
+        playButton.SetActive(false);
         stopButton.SetActive(true);
+        pauseButton.SetActive(true);
+    }
+
+    public void ShowPlayButton()
+    {
+        playButton.SetActive(true);
+        pauseButton.SetActive(false);
+    }
+
+    public void TryRemoveCell(Vector3Int position)
+    {
+        var removed = GameManager.Instance.Cells.TryRemovecell(position);
+
+        if (removed != 0)
+        {
+            cellsLeft[removed - 1]++;
+            text[removed - 1].text = cellsLeft[removed - 1].ToString();
+
+            if (selected != 0 && cellsLeft[selected - 1] != 0)
+            {
+                ghost.GetComponent<SpriteRenderer>().color = white;
+            }
+        }
+    }
+
+    public void SwitchToInstructionsScreen()
+    {
+        selector.SetActive(false);
+        instructions.SetActive(true);
     }
 }
