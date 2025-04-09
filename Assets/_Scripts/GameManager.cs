@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        ExitGame();
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            ExitGame();
+        }
     }
 
     public void Reload()
@@ -35,6 +38,11 @@ public class GameManager : MonoBehaviour
     public void LoadScene(int index)
     {
         SceneManager.LoadScene(index);
+    }
+
+    public void LoadNext()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void ExitGame()

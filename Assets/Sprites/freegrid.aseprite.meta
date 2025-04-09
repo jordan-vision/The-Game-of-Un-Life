@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d76c4edfeb9f30d4982bfc2952a5fced
+guid: 1b0919bc71d49d34392d0b2bce1709cf
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -76,7 +76,7 @@ ScriptedImporter:
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
-    defaultPivotAlignment: 7
+    defaultPivotAlignment: 0
     customPivotPosition: {x: 0.5, y: 0.5}
     mosaicPadding: 4
     spritePadding: 0
@@ -89,7 +89,7 @@ ScriptedImporter:
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
-    defaultPivotAlignment: 7
+    defaultPivotAlignment: 0
     customPivotPosition: {x: 0.5, y: 0.5}
     mosaicPadding: 4
     spritePadding: 0
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638797707354430354
+  platformSettingsDirtyTick: 638791960467415718
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -125,7 +125,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: grid
     originalName: 
-    pivot: {x: 0.49881935, y: -0.0016155089}
+    pivot: {x: 0.5, y: 0.5}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,8 +133,8 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 1694
-      height: 619
+      width: 1920
+      height: 720
     spriteID: 773c4bbf58799784792be9adc1b6e938
     spriteBone: []
     spriteOutline: []
@@ -146,17 +146,17 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 4}
   - name: Frame_1
     originalName: 
-    pivot: {x: 0.4982291, y: 0}
+    pivot: {x: 0.5, y: 0.5}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
       x: 4
-      y: 631
-      width: 1694
-      height: 611
-    spriteID: 45d8c902264af554cb421b06b5869c06
+      y: 732
+      width: 1920
+      height: 720
+    spriteID: b579bda9dec86d64a9167c307e07a6af
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -164,20 +164,20 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 631}
+    uvTransform: {x: 4, y: 732}
   - name: Frame_2
     originalName: 
-    pivot: {x: 0.4982291, y: -0.0016474464}
+    pivot: {x: 0.5, y: 0.5}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
       x: 4
-      y: 1250
-      width: 1694
-      height: 607
-    spriteID: 11f2bb6ea8c232d48bd2ba2641f0980b
+      y: 1460
+      width: 1920
+      height: 720
+    spriteID: 7f2b3cbcf26618841b3704e625e520c6
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -185,7 +185,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 1250}
+    uvTransform: {x: 4, y: 1460}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
@@ -199,29 +199,29 @@ ScriptedImporter:
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 5
-        y: 1
-        width: 1694
-        height: 619
+        x: 0
+        y: 0
+        width: 1920
+        height: 720
       spriteId: 773c4bbf58799784792be9adc1b6e938
     - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
       cellRect:
-        x: 6
+        x: 0
         y: 0
-        width: 1694
-        height: 611
-      spriteId: 45d8c902264af554cb421b06b5869c06
+        width: 1920
+        height: 720
+      spriteId: b579bda9dec86d64a9167c307e07a6af
     - name: Frame_2
       frameIndex: 2
       additiveSortOrder: 0
       cellRect:
-        x: 6
-        y: 1
-        width: 1694
-        height: 607
-      spriteId: 11f2bb6ea8c232d48bd2ba2641f0980b
+        x: 0
+        y: 0
+        width: 1920
+        height: 720
+      spriteId: 7f2b3cbcf26618841b3704e625e520c6
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -264,5 +264,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 1700, y: 620}
-  previousTextureSize: {x: 2048, y: 2048}
+  canvasSize: {x: 1920, y: 720}
+  previousTextureSize: {x: 2048, y: 4096}

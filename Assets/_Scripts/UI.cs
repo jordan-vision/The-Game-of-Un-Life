@@ -19,7 +19,7 @@ public class UI : MonoBehaviour
 
     public void Select(int id)
     {
-        if (GameManager.Instance.Cells.Started)
+        if (!IsPlacementPossible())
         {
             return;
         }
@@ -36,7 +36,7 @@ public class UI : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.Cells.Started)
+        if (!IsPlacementPossible())
         {
             return;
         }
@@ -46,7 +46,9 @@ public class UI : MonoBehaviour
         var worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         var tilemapPosition = tilemap.WorldToCell(worldPosition);
 
-        var lockedIn = (levelData.GridBoundingBox.IsOnTheLeftSide(tilemapPosition.x, tilemapPosition.y));
+        var lockedIn = levelData.FreePlay ?
+            levelData.GridBoundingBox.Contains(tilemapPosition.x, tilemapPosition.y) :
+            levelData.GridBoundingBox.IsOnTheLeftSide(tilemapPosition.x, tilemapPosition.y);
 
         ghost.transform.position = lockedIn ?
                 tilemap.GetCellCenterWorld(tilemapPosition) :
@@ -65,7 +67,7 @@ public class UI : MonoBehaviour
 
         else if (Input.GetKeyDown(KeyCode.Mouse0) && selected != 0 && cellsLeft[selected - 1] > 0)
         {
-            if (GameManager.Instance.Cells.TryAddCell(tilemapPosition, selected))
+            if (GameManager.Instance.Cells.TryAddCell(tilemapPosition, selected) && !levelData.FreePlay)
             {
                 cellsLeft[selected - 1]--;
                 text[selected - 1].text = cellsLeft[selected - 1].ToString();
@@ -101,7 +103,7 @@ public class UI : MonoBehaviour
     {
         var removed = GameManager.Instance.Cells.TryRemovecell(position);
 
-        if (removed != 0)
+        if (removed != 0 && !levelData.FreePlay)
         {
             cellsLeft[removed - 1]++;
             text[removed - 1].text = cellsLeft[removed - 1].ToString();
@@ -124,6 +126,11 @@ public class UI : MonoBehaviour
 
     public void SwitchToEndScreen(bool win)
     {
+        if (levelData.FreePlay)
+        {
+            return;
+        }
+
         instructions.SetActive(false);
 
         if (win)
@@ -135,4 +142,12 @@ public class UI : MonoBehaviour
             loseScreen.SetActive(true);
         }
     }
+
+    public void SwitchToSelection()
+    {
+        selector.SetActive(true);
+        instructions.SetActive(false);
+    }
+
+    private bool IsPlacementPossible() => levelData.FreePlay ? !GameManager.Instance.Cells.Running : !GameManager.Instance.Cells.Started;
 }

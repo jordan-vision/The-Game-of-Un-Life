@@ -17,6 +17,8 @@ public class Cells : MonoBehaviour
 
     public Tilemap Tilemap => tilemap;
 
+    public bool Running => running;
+
     public bool Started => started;
 
     private void Start()
@@ -102,15 +104,18 @@ public class Cells : MonoBehaviour
 
                 if (tileBase == GameManager.Instance.GunnerTileBase)
                 {
-                    if ((generation - 1) % 8 == 0) 
+                    if ((generation - 1) % 4 == 0) 
                     {
-                        if (levelData.Wraparound)
+                        var newCoordinates = levelData.Wraparound ? levelData.GridBoundingBox.Wraparound(x + 1, y) : (x + 1, y);
+                        var nextTile = tilemap.GetTile(new(newCoordinates.Item1, newCoordinates.Item2));
+
+                        if (nextTile == GameManager.Instance.EnemyTileBase)
                         {
-                            moveBullet.Add(levelData.GridBoundingBox.Wraparound(x + 1, y));
-                        }
-                        else
+                            toKill.Add(newCoordinates);
+                        } 
+                        else if (nextTile == null)
                         {
-                            moveBullet.Add((x + 1, y));
+                            moveBullet.Add(newCoordinates);
                         }
                     }
                 }
@@ -120,11 +125,31 @@ public class Cells : MonoBehaviour
                     toKill.Add((x, y));
                     if (levelData.GridBoundingBox.Contains(x + 1, y))
                     {
-                        moveBullet.Add((x + 1, y));
+                        var newCoordinates = (x + 1, y);
+                        var nextTile = tilemap.GetTile(new(newCoordinates.Item1, newCoordinates.Item2));
+
+                        if (nextTile == GameManager.Instance.EnemyTileBase)
+                        {
+                            toKill.Add(newCoordinates);
+                        }
+                        else if (nextTile == null)
+                        {
+                            moveBullet.Add(newCoordinates);
+                        }
                     } 
                     else if (levelData.Wraparound)
                     {
-                        moveBullet.Add(levelData.GridBoundingBox.Wraparound(x + 1, y));
+                        var newCoordinates = levelData.GridBoundingBox.Wraparound(x + 1, y);
+                        var nextTile = tilemap.GetTile(new(newCoordinates.Item1, newCoordinates.Item2));
+
+                        if (nextTile == GameManager.Instance.EnemyTileBase)
+                        {
+                            toKill.Add(newCoordinates);
+                        }
+                        else if (nextTile == null)
+                        {
+                            moveBullet.Add(newCoordinates);
+                        }
                     }
                 }
             }
@@ -156,7 +181,7 @@ public class Cells : MonoBehaviour
         {
             tilemap.SetTile(new(x, y), GameManager.Instance.BulletTileBase);
         }
-        
+
         foreach (var (x, y) in spreadWall)
         {
             tilemap.SetTile(new(x, y), GameManager.Instance.WallTileBase);
@@ -217,6 +242,10 @@ public class Cells : MonoBehaviour
                 tilemap.SetTile(position, GameManager.Instance.WallTileBase);
                 break;
 
+            case 3:
+                tilemap.SetTile(position, GameManager.Instance.EnemyTileBase);
+                break;
+
             default:
                 break;
         }
@@ -236,6 +265,10 @@ public class Cells : MonoBehaviour
         else if (tileBase == GameManager.Instance.WallTileBase)
         {
             returnValue = 2;
+        } 
+        else if (tileBase == GameManager.Instance.EnemyTileBase)
+        {
+            returnValue = 3;
         }
 
         tilemap.SetTile(position, null);
