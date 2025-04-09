@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 
 public class Cells : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class Cells : MonoBehaviour
 
         if (randomElementsGenerator != null)
         {
-            randomElementsGenerator.AddWall();
+            randomElementsGenerator.AddBomb();
             randomElementsGenerator.AddGunner();
             randomElementsGenerator.AddGunner();
         }
@@ -73,10 +74,12 @@ public class Cells : MonoBehaviour
     private void Generate()
     {
         generation++;
+
         var toKill = new List<(int, int)> { };
         var newEnemies = new List<(int, int)> { };
         var moveBullet = new List<(int, int)> { };
-        var spreadWall = new List<(int, int)> { };
+        var toExplode = new List<(int, int)> { };
+        var toInfiltrate = new List<(int, int)> { };
 
         for (var x = levelData.GridBoundingBox.MinX; x <= levelData.GridBoundingBox.MaxX; x++)
         {
@@ -113,7 +116,7 @@ public class Cells : MonoBehaviour
                         {
                             toKill.Add(newCoordinates);
                         } 
-                        else if (nextTile == null)
+                        else
                         {
                             moveBullet.Add(newCoordinates);
                         }
@@ -132,7 +135,7 @@ public class Cells : MonoBehaviour
                         {
                             toKill.Add(newCoordinates);
                         }
-                        else if (nextTile == null)
+                        else
                         {
                             moveBullet.Add(newCoordinates);
                         }
@@ -146,7 +149,7 @@ public class Cells : MonoBehaviour
                         {
                             toKill.Add(newCoordinates);
                         }
-                        else if (nextTile == null)
+                        else
                         {
                             moveBullet.Add(newCoordinates);
                         }
@@ -162,34 +165,55 @@ public class Cells : MonoBehaviour
 
         foreach (var (x, y) in newEnemies)
         {
-            if (tilemap.GetTile(new(x, y)) == GameManager.Instance.WallTileBase)
+            var tile = tilemap.GetTile(new(x, y));
+
+            if (tile == GameManager.Instance.BombTileBase)
+            {
+                toExplode.Add((x, y));
+                toExplode.AddRange(AllNeighbors(x, y));
+            }
+
+            else if (tile == GameManager.Instance.InfiltratorTileBase)
             {
                 var liveNeighbors = EnemyNeighbors(x, y);
                 foreach (var neighbor in liveNeighbors)
                 {
-                    if (!spreadWall.Contains(neighbor))
+                    if (!toInfiltrate.Contains(neighbor))
                     {
-                        spreadWall.Add(neighbor);
+                        toInfiltrate.Add(neighbor);
                     }
                 }
             }
-
             tilemap.SetTile(new(x, y), GameManager.Instance.EnemyTileBase);
         }
 
         foreach (var (x, y) in moveBullet)
         {
-            tilemap.SetTile(new(x, y), GameManager.Instance.BulletTileBase);
+            var tile = tilemap.GetTile(new(x, y));
+            if (tile == GameManager.Instance.BombTileBase)
+            {
+                toExplode.Add((x, y));
+                toExplode.AddRange(AllNeighbors(x, y));
+            }
+            else if (tile == null)
+            {
+                tilemap.SetTile(new(x, y), GameManager.Instance.BulletTileBase);
+            }
         }
 
-        foreach (var (x, y) in spreadWall)
+        foreach (var (x, y) in toInfiltrate)
         {
-            tilemap.SetTile(new(x, y), GameManager.Instance.WallTileBase);
+            tilemap.SetTile(new(x, y), GameManager.Instance.InfiltratorTileBase);
+        }
+
+        foreach (var (x, y) in toExplode)
+        {
+            tilemap.SetTile(new(x, y), null);
         }
 
         if (!ended)
         {
-            var playerCellCount = CountCellsOfTypes(new List<TileBase>() { GameManager.Instance.GunnerTileBase, GameManager.Instance.WallTileBase });
+            var playerCellCount = CountCellsOfTypes(new List<TileBase>() { GameManager.Instance.GunnerTileBase, GameManager.Instance.BombTileBase, GameManager.Instance.InfiltratorTileBase });
             var enemyCellCount = CountCellsOfTypes(new List<TileBase>() { GameManager.Instance.EnemyTileBase });
 
             if (enemyCellCount == 0)
@@ -205,10 +229,10 @@ public class Cells : MonoBehaviour
         }
     }
 
-    private List<(int, int)> EnemyNeighbors(int x, int y)
+    private List<(int, int)> AllNeighbors(int x, int y)
     {
         var allPotentialNeighbors = new List<(int, int)> { (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1), (x + 1, y + 1), (x - 1, y + 1), (x + 1, y - 1), (x - 1, y - 1) };
-        
+
         List<(int, int)> actualNeighbors = new();
 
         if (levelData.Wraparound)
@@ -220,7 +244,13 @@ public class Cells : MonoBehaviour
             actualNeighbors = allPotentialNeighbors.Where(xy => levelData.GridBoundingBox.Contains(xy.Item1, xy.Item2)).ToList();
         }
 
-        var enemyNeighbors = actualNeighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
+        return actualNeighbors;
+    }
+
+    private List<(int, int)> EnemyNeighbors(int x, int y)
+    {
+        var allNeighbors = AllNeighbors(x, y);
+        var enemyNeighbors = allNeighbors.Where(xy => tilemap.GetTile(new (xy.Item1, xy.Item2)) == GameManager.Instance.EnemyTileBase);
 
         return enemyNeighbors.ToList();
     }
@@ -239,10 +269,14 @@ public class Cells : MonoBehaviour
                 break;
 
             case 2:
-                tilemap.SetTile(position, GameManager.Instance.WallTileBase);
+                tilemap.SetTile(position, GameManager.Instance.BombTileBase);
                 break;
 
             case 3:
+                tilemap.SetTile(position, GameManager.Instance.InfiltratorTileBase);
+                break;
+
+            case 4:
                 tilemap.SetTile(position, GameManager.Instance.EnemyTileBase);
                 break;
 
@@ -262,13 +296,17 @@ public class Cells : MonoBehaviour
         {
             returnValue = 1;
         }
-        else if (tileBase == GameManager.Instance.WallTileBase)
+        else if (tileBase == GameManager.Instance.BombTileBase)
         {
             returnValue = 2;
-        } 
-        else if (tileBase == GameManager.Instance.EnemyTileBase)
+        }
+        else if (tileBase == GameManager.Instance.InfiltratorTileBase)
         {
             returnValue = 3;
+        }
+        else if (tileBase == GameManager.Instance.EnemyTileBase)
+        {
+            returnValue = 4;
         }
 
         tilemap.SetTile(position, null);

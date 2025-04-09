@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -758114600691350567, guid: 41d88a1a6ebecec428e15d575f060730, type: 3}
+  m_Sprite: {fileID: 2576510933807726517, guid: e48249a423ba32948813a822baf3b087, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 2444415178307304368}
   - component: {fileID: 7131131442742846802}
   m_Layer: 5
-  m_Name: WallLayout
+  m_Name: InfiltratorLayout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

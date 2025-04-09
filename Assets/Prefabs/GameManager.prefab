@@ -47,5 +47,6 @@ MonoBehaviour:
   EnemyTileBase: {fileID: 11400000, guid: d096b33c72cbde84e80d43d453009aea, type: 2}
   GunnerTileBase: {fileID: 11400000, guid: 7b683cad27ca6244996721c513b2e4d1, type: 2}
   BulletTileBase: {fileID: 11400000, guid: aedb361b4bc85df40a9e5d70da1d7f6c, type: 2}
-  WallTileBase: {fileID: 11400000, guid: e53c51e9213ca8a4898368cc4964c346, type: 2}
+  BombTileBase: {fileID: 11400000, guid: e53c51e9213ca8a4898368cc4964c346, type: 2}
+  InfiltratorTileBase: {fileID: 11400000, guid: fad181860e2f6cd458bd0e6de9293708, type: 2}
   UI: {fileID: 0}

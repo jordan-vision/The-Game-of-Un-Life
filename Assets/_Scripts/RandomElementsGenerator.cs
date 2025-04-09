@@ -11,10 +11,10 @@ public class RandomElementsGenerator : MonoBehaviour
         cells = GetComponent<Cells>();
     }
 
-    public void AddWall()
+    public void AddBomb()
     {
-        var wallPosition = LevelData.GridBoundingBox.RandomPosition();
-        cells.TryAddCell(wallPosition, 2);
+        var bombPosition = LevelData.GridBoundingBox.RandomPosition();
+        cells.TryAddCell(bombPosition, 2);
     }
 
     public void AddGunner()

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     private Cells cells;
 
     public static GameManager Instance;
-    public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase, WallTileBase;
+    public TileBase EnemyTileBase, GunnerTileBase, BulletTileBase, BombTileBase, InfiltratorTileBase;
     public UI UI;
 
     public Cells Cells => cells;
