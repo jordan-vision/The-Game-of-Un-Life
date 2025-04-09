@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UI : MonoBehaviour
@@ -13,7 +14,7 @@ public class UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] text;
 
     [SerializeField] private GameObject ghost;
-    [SerializeField] private GameObject playButton, stopButton, pauseButton, selector, instructions;
+    [SerializeField] private GameObject playButton, stopButton, pauseButton, selector, instructions, winScreen, loseScreen;
     [SerializeField] private LevelData levelData;
 
     public void Select(int id)
@@ -114,7 +115,24 @@ public class UI : MonoBehaviour
 
     public void SwitchToInstructionsScreen()
     {
-        selector.SetActive(false);
-        instructions.SetActive(true);
+        if (!winScreen.activeSelf && !loseScreen.activeSelf)
+        {
+            selector.SetActive(false);
+            instructions.SetActive(true);
+        }
+    }
+
+    public void SwitchToEndScreen(bool win)
+    {
+        instructions.SetActive(false);
+
+        if (win)
+        {
+            winScreen.SetActive(true);
+        }
+        else
+        {
+            loseScreen.SetActive(true);
+        }
     }
 }

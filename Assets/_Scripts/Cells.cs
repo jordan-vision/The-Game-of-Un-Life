@@ -7,8 +7,7 @@ public class Cells : MonoBehaviour
 {
     float timer, currentStepTime;
     int generation = 0;
-    bool running = false;
-    bool started = false;
+    bool running = false, started = false, ended = false;
 
     Tilemap tilemap;
     RandomElementsGenerator randomElementsGenerator;
@@ -37,6 +36,7 @@ public class Cells : MonoBehaviour
 
         running = levelData.Autoplay;
         started = running;
+        ended = running;
     }
 
     public void StartRunning()
@@ -161,6 +161,23 @@ public class Cells : MonoBehaviour
         {
             tilemap.SetTile(new(x, y), GameManager.Instance.WallTileBase);
         }
+
+        if (!ended)
+        {
+            var playerCellCount = CountCellsOfTypes(new List<TileBase>() { GameManager.Instance.GunnerTileBase, GameManager.Instance.WallTileBase });
+            var enemyCellCount = CountCellsOfTypes(new List<TileBase>() { GameManager.Instance.EnemyTileBase });
+
+            if (enemyCellCount == 0)
+            {
+                GameManager.Instance.UI.SwitchToEndScreen(true);
+                ended = true;
+            }
+            else if (playerCellCount == 0)
+            {
+                GameManager.Instance.UI.SwitchToEndScreen(false);
+                ended = true;
+            }
+        }
     }
 
     private List<(int, int)> EnemyNeighbors(int x, int y)
@@ -229,5 +246,23 @@ public class Cells : MonoBehaviour
     public void Pause()
     {
         running = false;
+    }
+
+    private int CountCellsOfTypes(List<TileBase> tileBases)
+    {
+        var count = 0;
+
+        for (var x = levelData.GridBoundingBox.MinX; x <= levelData.GridBoundingBox.MaxX; x++)
+        {
+            for (var y = levelData.GridBoundingBox.MinY; y <= levelData.GridBoundingBox.MaxY; y++)
+            {
+                if (tileBases.Contains(tilemap.GetTile(new (x, y)))) 
+                {
+                    count++;
+                }
+            }
+        }
+
+        return count;
     }
 }
