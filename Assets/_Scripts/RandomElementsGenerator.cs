@@ -22,4 +22,10 @@ public class RandomElementsGenerator : MonoBehaviour
         var gunnerPosition = LevelData.GridBoundingBox.RandomPosition();
         cells.TryAddCell(gunnerPosition, 1);
     }
+
+    public void AddInfiltrator()
+    {
+        var infiltratorPosition = LevelData.GridBoundingBox.RandomPosition();
+        cells.TryAddCell(infiltratorPosition, 3);
+    }
 }

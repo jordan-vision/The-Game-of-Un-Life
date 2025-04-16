@@ -15,6 +15,7 @@ public class Cells : MonoBehaviour
 
     [SerializeField] float baseStepTime;
     [SerializeField] LevelData levelData;
+    [SerializeField] GameObject boomCloud;
 
     public Tilemap Tilemap => tilemap;
 
@@ -33,8 +34,11 @@ public class Cells : MonoBehaviour
         if (randomElementsGenerator != null)
         {
             randomElementsGenerator.AddBomb();
+            randomElementsGenerator.AddBomb();
             randomElementsGenerator.AddGunner();
             randomElementsGenerator.AddGunner();
+            randomElementsGenerator.AddInfiltrator();
+            randomElementsGenerator.AddInfiltrator();
         }
 
         running = levelData.Autoplay;
@@ -50,14 +54,14 @@ public class Cells : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            GameManager.Instance.LoadScene(0);
+        }
+
         if (!running)
         {
             return;
-        }
-
-        if (Input.GetKey(KeyCode.M))
-        {
-            GameManager.Instance.LoadScene(0);
         }
 
         currentStepTime = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) ? baseStepTime / 4 : baseStepTime;
@@ -74,6 +78,11 @@ public class Cells : MonoBehaviour
     private void Generate()
     {
         generation++;
+
+        if (!levelData.Autoplay  && generation >= 16)
+        {
+            GameManager.Instance.UI.ShowTip();
+        }
 
         var toKill = new List<(int, int)> { };
         var newEnemies = new List<(int, int)> { };
@@ -209,6 +218,9 @@ public class Cells : MonoBehaviour
         foreach (var (x, y) in toExplode)
         {
             tilemap.SetTile(new(x, y), null);
+            var worldPosition = tilemap.GetCellCenterWorld(new(x, y));
+            var cloud = Instantiate(boomCloud, worldPosition, Quaternion.Euler(0, 0, Random.Range(0.0f, 360.0f)));
+            cloud.GetComponent<SpriteRenderer>().color = tilemap.color;
         }
 
         if (!ended)

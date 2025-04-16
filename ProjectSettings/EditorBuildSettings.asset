@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/_Scenes/Level 4.unity
     guid: 2194f3628a06f8e4e953d3b583e9665d
   - enabled: 1
+    path: Assets/_Scenes/Level 5.unity
+    guid: 75ec31f473032274799ef2d728e9f48a
+  - enabled: 1
     path: Assets/_Scenes/FreePlay.unity
     guid: f40695f8c66fb4544bee70714fa5bcb4
   m_configObjects:

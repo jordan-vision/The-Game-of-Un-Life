@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKey(KeyCode.Escape) || SceneManager.GetActiveScene().buildIndex == 0)
         {
             ExitGame();
         }

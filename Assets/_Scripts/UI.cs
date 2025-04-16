@@ -14,7 +14,7 @@ public class UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] text;
 
     [SerializeField] private GameObject ghost;
-    [SerializeField] private GameObject playButton, stopButton, pauseButton, selector, instructions, winScreen, loseScreen;
+    [SerializeField] private GameObject playButton, stopButton, pauseButton, selector, instructions, winScreen, loseScreen, tip;
     [SerializeField] private LevelData levelData;
 
     public void Select(int id)
@@ -150,4 +150,9 @@ public class UI : MonoBehaviour
     }
 
     private bool IsPlacementPossible() => levelData.FreePlay ? !GameManager.Instance.Cells.Running : !GameManager.Instance.Cells.Started;
+
+    public void ShowTip()
+    {
+        tip.SetActive(true);
+    }
 }
