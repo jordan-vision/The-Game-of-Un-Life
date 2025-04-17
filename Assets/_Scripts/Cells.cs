@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.WSA;
 
 public class Cells : MonoBehaviour
 {
@@ -79,7 +78,7 @@ public class Cells : MonoBehaviour
     {
         generation++;
 
-        if (!levelData.Autoplay  && generation >= 16)
+        if (!levelData.Autoplay && !levelData.FreePlay && generation >= 16)
         {
             GameManager.Instance.UI.ShowTip();
         }

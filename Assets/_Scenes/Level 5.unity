@@ -394,6 +394,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 8208059374277953227, guid: 3529ddbdae8b5d04ea986c3a99212528, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 199118404}
+    - target: {fileID: 8208059374277953227, guid: 3529ddbdae8b5d04ea986c3a99212528, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Reload
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6125615485236517130, guid: 3529ddbdae8b5d04ea986c3a99212528, type: 3}
     - {fileID: 5599356280983873215, guid: 3529ddbdae8b5d04ea986c3a99212528, type: 3}
